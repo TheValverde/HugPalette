@@ -3,7 +3,6 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
 import threading
-import shutil
 import os
 import sys
 from datetime import datetime
@@ -17,8 +16,6 @@ openai_response_received = threading.Event()
 def get_hexcodes_from_chatgpt(description,):
     openai.api_key = OPENAI_API_KEY
     global gpt_hexcodes_json, prompt
-    #I wonder if doing {description} is what is breaking my code.
-    #I think it is. I need to figure out how to get the description into the prompt.
     prompt = f"You are an assistant that creates color palettes based on the input you are given. Your responses are only given in a json format and only have hexcodes. You will not include any label in the json output, nor will you use the word 'color' or 'colors' in your output ever. You will only list the hexcodes, dont even label them. Give me 6 hexcodes that would be good for the following description in json formatting: {description})"
     openai_response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -35,12 +32,6 @@ def get_hexcodes_from_chatgpt(description,):
 def rgb_to_hex(rgb):
     return "#{:02x}{:02x}{:02x}".format(rgb[0], rgb[1], rgb[2])
 
-
-        # Get the user's Documents folder path
-        #hpalette_folder = os.path.join(os.path.expanduser('~'), 'Documents', 'HugPalette')
-        # Create the HPalette folder if it doesn't exist
-        #if not os.path.exists(hpalette_folder):
-        #    os.makedirs(hpalette_folder)
 
 if getattr(sys, 'frozen', False):
     # If the application is run as a bundle, use the bundle directory as the base path
@@ -83,9 +74,9 @@ def generate_palette():
         messagebox.showerror("Error", "Please enter a description.")
         return
 
-    # Disable the generate button and show a progress bar
+    # Disable the generate button 
     generate_button.config(state="disabled")
-    #progress_bar.grid(columnspan=2, padx=10, pady=10)
+    
 
 
     # Start the API request in a separate thread
@@ -156,7 +147,7 @@ def generate_palette_thread(description):
         messagebox.showerror("Error", "An error occurred while generating the color palette.")
 
     finally:
-        #Re-enable the generate button and hide the progress bar
+        #Re-enable the generate button
         generate_button.config(state="normal")
         #progress_bar.grid_forget()
 
